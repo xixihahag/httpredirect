@@ -22,13 +22,14 @@ TcpConnection *Conn;
 
 void sendMsg2(void *a)
 {
+    printf("recv chrom request\n");
     int connfd = Conn->getChannel()->getFd();
     memset(buf, 0, sizeof(buf));
 
     sprintf(buf, "HTTP/1.0 200 OK\r\n");
-    strcat(buf, "Server: hoohackhttpd/0.1.0\r\n");
+    // strcat(buf, "Server: hoohackhttpd/0.1.0\r\n");
     strcat(buf, "Content-Type: text/html\r\n\r\n");
-    strcat(buf, "Hello This is slave");
+    strcat(buf, "Hello This is slave\r\n\r\n");
 
     send(connfd, buf, strlen(buf), 0);
 }
@@ -38,7 +39,7 @@ int main(int argc, char const *argv[])
     EventLoop loop;
     loop.init();
 
-    struct SocketAddress4 servaddr("0.0.0.0", 8080);
+    struct SocketAddress4 servaddr("0.0.0.0", 8081);
     TcpAcceptor *tAc = new TcpAcceptor(&loop);
     tAc->start(servaddr);
 

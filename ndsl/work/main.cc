@@ -38,6 +38,7 @@ char *getNextSlave()
 
 void recvCB(void *a)
 {
+    printf("recv chrom request\n");
     // 循环slave池，进行转发
     int connfd = Conn->getChannel()->getFd();
     memset(buf, 0, sizeof(buf));
@@ -46,10 +47,12 @@ void recvCB(void *a)
     char *slave = getNextSlave();
     if (slave == NULL) {
         // 若无slave启动，则重定向到百度
-        strcat(buf, "www.baidu.com");
+        strcat(buf, "www.baidu.com\r\n\r\n");
     } else {
-        strcat(buf, getNextSlave());
-        strcat(buf, ":8080\r\n\r\n");
+        char *slave = getNextSlave();
+        printf("slave ip = %s\n", slave);
+        strcat(buf, slave);
+        strcat(buf, ":8081\r\n\r\n");
     }
     // 同步发送
     send(connfd, buf, strlen(buf), 0);
@@ -64,6 +67,7 @@ void acceptBrowserCb(void *a)
 
 void acceptServerCb(void *a)
 {
+    printf("recv new slave\n");
     char *str = (char *) calloc(sizeof(char), 20);
     str = inet_ntoa(rservaddr.sin_addr);
 
